@@ -101,6 +101,9 @@ dependencies {
     implementation(libs.okio)
 
     testImplementation(libs.junit)
+    // org.json ships with the Android platform (android.jar). It is only added
+    // to the JVM unit-test classpath so pure parser tests run outside the device.
+    testImplementation(libs.org.json)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
