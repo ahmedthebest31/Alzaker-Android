@@ -118,4 +118,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Compose runtime is a pure-Kotlin library, so unit tests for the manual
+    // navigation controller can run on the JVM.
+    testImplementation(composeBom)
+    testImplementation("androidx.compose.runtime:runtime")
 }

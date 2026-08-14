@@ -26,6 +26,10 @@ class SettingsRepositoryImpl(
         .catch { error -> if (error is IOException) emit(emptyPreferences()) else throw error }
         .map { prefs -> prefs.toAppSettings() }
 
+    override suspend fun setHasLaunched(value: Boolean) {
+        dataStore.edit { prefs -> prefs[Keys.HAS_LAUNCHED] = value }
+    }
+
     override suspend fun setThemeName(name: String) {
         dataStore.edit { prefs -> prefs[Keys.THEME_NAME] = name }
     }
@@ -71,6 +75,7 @@ class SettingsRepositoryImpl(
     }
 
     private fun Preferences.toAppSettings(): AppSettings = AppSettings(
+        hasLaunched = this[Keys.HAS_LAUNCHED] ?: false,
         themeName = this[Keys.THEME_NAME] ?: AppSettings.DEFAULT_THEME_NAME,
         fontSizeMultiplier = this[Keys.FONT_SIZE_MULTIPLIER] ?: AppSettings.DEFAULT_FONT_SIZE_MULTIPLIER,
         hapticsEnabled = this[Keys.HAPTICS_ENABLED] ?: AppSettings.DEFAULT_HAPTICS_ENABLED,
@@ -85,6 +90,7 @@ class SettingsRepositoryImpl(
     )
 
     private companion object Keys {
+        val HAS_LAUNCHED = booleanPreferencesKey("has_launched")
         val THEME_NAME = stringPreferencesKey("theme_name")
         val FONT_SIZE_MULTIPLIER = floatPreferencesKey("font_size_multiplier")
         val HAPTICS_ENABLED = booleanPreferencesKey("haptics_enabled")

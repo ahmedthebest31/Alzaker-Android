@@ -5,6 +5,7 @@ package com.ahmedsamy.alzaker.data.local
  * Expo app's initial values.
  */
 data class AppSettings(
+    val hasLaunched: Boolean = false,
     val themeName: String = DEFAULT_THEME_NAME,
     val fontSizeMultiplier: Float = DEFAULT_FONT_SIZE_MULTIPLIER,
     val hapticsEnabled: Boolean = DEFAULT_HAPTICS_ENABLED,

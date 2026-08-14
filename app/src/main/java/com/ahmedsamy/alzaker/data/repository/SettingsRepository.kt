@@ -10,6 +10,9 @@ interface SettingsRepository {
 
     val settings: Flow<AppSettings>
 
+    /** Marks the onboarding wizard as completed (legacy 'hasLaunched' key). */
+    suspend fun setHasLaunched(value: Boolean)
+
     suspend fun setThemeName(name: String)
 
     suspend fun setFontSizeMultiplier(multiplier: Float)

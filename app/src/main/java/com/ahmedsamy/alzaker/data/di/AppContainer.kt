@@ -9,6 +9,8 @@ import com.ahmedsamy.alzaker.data.repository.FavoritesRepository
 import com.ahmedsamy.alzaker.data.repository.FavoritesRepositoryImpl
 import com.ahmedsamy.alzaker.data.repository.SettingsRepository
 import com.ahmedsamy.alzaker.data.repository.SettingsRepositoryImpl
+import com.ahmedsamy.alzaker.reminder.AlarmScheduler
+import com.ahmedsamy.alzaker.reminder.AlarmSchedulerImpl
 
 /**
  * Manual dependency container (no DI framework, keeping the build offline-safe).
@@ -32,5 +34,9 @@ class AppContainer(context: Context) {
             dhikrList = dataSource.loadDhikrList(),
             audioDropTexts = dataSource.loadAudioDropTexts(),
         )
+    }
+
+    val alarmScheduler: AlarmScheduler by lazy {
+        AlarmSchedulerImpl(appContext)
     }
 }
