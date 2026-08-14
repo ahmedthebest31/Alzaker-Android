@@ -2,40 +2,78 @@ package com.ahmedsamy.alzaker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Terminal-themed color palette
-val TerminalGreen = Color(0xFF00FF00)
-val TerminalBackground = Color(0xFF000000)
-val TerminalCardBackground = Color(0xFF000000)
-val TerminalBorder = Color(0xFF00FF00)
+/**
+ * The five selectable app themes, mirroring the legacy Expo app keys in
+ * utils/colors.ts. Enum values intentionally use the exact persisted strings
+ * so AppSettings.themeName maps directly onto [fromKey].
+ */
+enum class ThemeName(val key: String) {
+    DEFAULT("default"),
+    MIDNIGHT("midnight"),
+    NATURE("nature"),
+    ROYAL("royal"),
+    HIGH_CONTRAST("highContrast");
 
-// Text colors
-val TextPrimary = Color(0xFFFFFFFF)
-val TextSecondary = Color(0xFF888888)
-val TextMuted = Color(0xFF666666)
-val TextHint = Color(0xFF555555)
-val TextLight = Color(0xFFDDDDDD)
-val TextLighter = Color(0xFFAAAAAA)
+    companion object {
+        fun fromKey(key: String): ThemeName =
+            entries.firstOrNull { it.key == key } ?: DEFAULT
+    }
+}
 
-// Button colors
-val ButtonActive = Color(0xFF006600)
-val ButtonInactive = Color(0xFF333333)
-val ButtonSecondary = Color(0xFF222222)
+/**
+ * Brand colors of one theme, mirroring the legacy Theme interface
+ * (primary, primaryLight, optional accent, optional text). The legacy app
+ * paints every screen with a vertical gradient from [primary] (top) to
+ * [primaryLight] (bottom), white text on top, gold accents.
+ */
+data class AlzakerThemeColors(
+    val primary: Color,
+    val primaryLight: Color,
+    val accent: Color = Gold,
+    val text: Color = Color.White,
+)
 
-// Divider colors
-val DividerDark = Color(0xFF222222)
-val DividerMedium = Color(0xFF333333)
+/** The five themes with the exact hex values from legacy utils/colors.ts. */
+val AlzakerThemes: Map<ThemeName, AlzakerThemeColors> = mapOf(
+    ThemeName.DEFAULT to AlzakerThemeColors(
+        primary = Color(0xFF1E3C72),
+        primaryLight = Color(0xFF2A5298),
+    ),
+    ThemeName.MIDNIGHT to AlzakerThemeColors(
+        primary = Color(0xFF0F0C29),
+        primaryLight = Color(0xFF302B63),
+    ),
+    ThemeName.NATURE to AlzakerThemeColors(
+        primary = Color(0xFF134E5E),
+        primaryLight = Color(0xFF71B280),
+    ),
+    ThemeName.ROYAL to AlzakerThemeColors(
+        primary = Color(0xFF4B6CB7),
+        primaryLight = Color(0xFF182848),
+    ),
+    ThemeName.HIGH_CONTRAST to AlzakerThemeColors(
+        primary = Color.Black,
+        primaryLight = Color.Black,
+        accent = Color(0xFFFFFF00),
+        text = Color.White,
+    ),
+)
 
-// Status colors
-val StatusPaused = Color(0xFFAAAAAA)
+fun themeColors(themeName: ThemeName): AlzakerThemeColors =
+    AlzakerThemes[themeName] ?: AlzakerThemes.getValue(ThemeName.DEFAULT)
 
-// Light theme palette
-val LightTerminalGreen = Color(0xFF007A00)
-val LightTerminalBackground = Color(0xFFFFFFFF)
-val LightTerminalCardBackground = Color(0xFFF2F2F2)
-val LightTerminalBorder = Color(0xFF007A00)
-val LightTextPrimary = Color(0xFF1A1A1A)
-val LightTextSecondary = Color(0xFF555555)
-val LightButtonActive = Color(0xFF4CAF50)
-val LightButtonInactive = Color(0xFFE0E0E0)
-val LightButtonSecondary = Color(0xFFDDDDDD)
-val LightDividerMedium = Color(0xFFCCCCCC)
+/** Gold accent shared by every theme (legacy colors.gold). */
+val Gold = Color(0xFFFFD700)
+
+/** Shared legacy palette from utils/colors.ts (`colors` object). */
+object LegacyColors {
+    val White = Color.White
+    val Black = Color.Black
+    val Gray = Color(0xFF333333)
+    val LightGray = Color(0xFFEEEEEE)
+    val MediumGray = Color(0xFF767577)
+    val LightBlue = Color(0xFF81B0FF)
+    val OffWhite = Color(0xFFF4F3F4)
+    val Gold = Color(0xFFFFD700)
+    val Red = Color(0xFFFF5252)
+}
