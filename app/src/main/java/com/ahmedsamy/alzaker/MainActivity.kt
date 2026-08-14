@@ -1,4 +1,4 @@
-package com.ahmedsamy.app
+package com.ahmedsamy.alzaker
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,8 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.ahmedsamy.app.ui.theme.AppTheme
-import com.ahmedsamy.app.R
+import com.ahmedsamy.alzaker.ui.theme.AppTheme
+import com.ahmedsamy.alzaker.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

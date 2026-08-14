@@ -1,6 +1,6 @@
-package com.ahmedsamy.app
+package com.ahmedsamy.alzaker
 
-import com.ahmedsamy.app.util.StringUtil
+import com.ahmedsamy.alzaker.util.StringUtil
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

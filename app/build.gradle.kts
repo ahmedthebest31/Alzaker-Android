@@ -16,7 +16,7 @@ plugins {
 // See: https://izzyondroid.org/docs/general/AppInclusionPolicy/
 
 android {
-    namespace = "com.ahmedsamy.app"
+    namespace = "com.ahmedsamy.alzaker"
     compileSdk = 36
 
     defaultConfig {

@@ -1,4 +1,4 @@
-package com.ahmedsamy.app.util
+package com.ahmedsamy.alzaker.util
 
 object StringUtil {
 
