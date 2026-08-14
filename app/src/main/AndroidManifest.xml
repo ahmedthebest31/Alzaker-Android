@@ -2,7 +2,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--
+        Permissions mirror the published legacy Expo app (app.json android.permissions
+        plus the defaults the RN/Expo template always ships):
+        - VIBRATE, RECEIVE_BOOT_COMPLETED, FOREGROUND_SERVICE,
+          FOREGROUND_SERVICE_MEDIA_PLAYBACK, POST_NOTIFICATIONS are the explicit
+          legacy list.
+        - INTERNET is the RN/Expo default; needed for remote audio_url streaming
+          (decision D5) replicated in the dhikr audio overlay.
+        - USE_EXACT_ALARM is declared for OEM compat (note N2); the scheduler
+          falls back to setAndAllowWhileIdle when canScheduleExactAlarms() is false.
+        - WAKE_LOCK keeps the device awake while an audio drop plays in the
+          foreground service.
+    -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        tools:targetApi="34" />
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:targetApi="33" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.USE_EXACT_ALARM"
+        tools:targetApi="31" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
+        android:name=".AlzakerApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -21,6 +50,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            ReminderReceiver is targeted directly by an explicit-class
+            PendingIntent (AlarmSchedulerImpl.buildPendingIntent), so it needs no
+            intent-filter and stays non-exported.
+        -->
+        <receiver
+            android:name=".reminder.ReminderReceiver"
+            android:exported="false" />
+
+        <!-- Re-schedules enabled reminder chains after reboot / app update. -->
+        <receiver
+            android:name=".reminder.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".reminder.AudioReminderService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
 </manifest>
