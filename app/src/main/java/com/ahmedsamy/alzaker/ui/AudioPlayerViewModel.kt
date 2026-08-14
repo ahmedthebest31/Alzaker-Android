@@ -6,7 +6,6 @@ import android.media.MediaMetadata
 import android.media.MediaPlayer
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,12 +21,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * In-app audio player for the audio drop buttons, mirroring the legacy
- * AudioContext: a single MediaPlayer with 'doNotMix' audio focus, a lock-screen
- * media session titled like the legacy 'الذاكر'/'تذكير' and the user's volume
- * applied. Playback stops on completion, focus loss, or [stop].
+ * In-app dhikr audio player, mirroring the legacy AudioContext: one MediaPlayer
+ * streaming the dhikr's remote audio_url (decision D5) with 'doNotMix' audio
+ * focus and a lock-screen media session (title = dhikr text, artist =
+ * 'الذاكر'). The user's audio_volume is applied. Playback stops on completion,
+ * focus loss, or [stop]. [toggle] mirrors the legacy toggleDhikrSound (same id
+ * toggles off).
  */
 class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
+
+    var currentlyPlayingId by mutableStateOf<Int?>(null)
+        private set
+
+    var currentlyPlayingText by mutableStateOf<String?>(null)
+        private set
 
     var isPlaying by mutableStateOf(false)
         private set
@@ -39,17 +46,36 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
     private var mediaSession: MediaSession? = null
     private var audioFocusManager: AudioFocusManager? = null
 
-    /**
-     * Plays [resourceId] once. No-op while already playing or preparing.
-     * [title] and [subtitle] feed the lock-screen media metadata; [volume]
-     * mirrors the legacy audioVolume setting (0..1).
-     */
-    fun play(resourceId: Int, title: String, subtitle: String, volume: Float = 1f) {
+    /** Mirrors legacy playDhikrSound. */
+    fun play(id: Int, url: String, text: String, volume: Float = 1f) {
         if (isPlaying || isPreparing) return
         viewModelScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                prepareAndStart(resourceId, title, subtitle, volume)
+                prepareAndStart(id, url, text, volume)
             }
+        }
+    }
+
+    /** Mirrors legacy toggleDhikrSound: the same id toggles the sound off. */
+    fun toggle(id: Int, url: String, text: String, volume: Float = 1f) {
+        if (currentlyPlayingId == id) stop() else play(id, url, text, volume)
+    }
+
+    fun pause() {
+        val player = mediaPlayer ?: return
+        if (!isPlaying) return
+        viewModelScope.launch(Dispatchers.Main) {
+            runCatching { player.pause() }
+            isPlaying = false
+        }
+    }
+
+    fun resume() {
+        val player = mediaPlayer ?: return
+        if (isPlaying) return
+        viewModelScope.launch(Dispatchers.Main) {
+            runCatching { player.start() }
+            isPlaying = true
         }
     }
 
@@ -61,7 +87,7 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    private fun prepareAndStart(resourceId: Int, title: String, subtitle: String, volume: Float) {
+    private fun prepareAndStart(id: Int, url: String, text: String, volume: Float) {
         stopInternal(abandonFocus = true)
         isPreparing = true
         try {
@@ -79,16 +105,19 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
                 stopInternal(abandonFocus = true)
                 true
             }
-            player.setDataSource(
-                appContext,
-                Uri.parse("android.resource://${appContext.packageName}/$resourceId"),
-            )
+            player.setDataSource(url)
             player.prepare()
 
             audioFocusManager = AudioFocusManager(
                 context = appContext,
-                onPause = { mediaPlayer?.let { runCatching { it.pause() } } },
-                onResume = { mediaPlayer?.let { runCatching { it.start() } } },
+                onPause = {
+                    runCatching { mediaPlayer?.pause() }
+                    isPlaying = false
+                },
+                onResume = {
+                    runCatching { mediaPlayer?.start() }
+                    isPlaying = true
+                },
                 onStop = { stopInternal(abandonFocus = false) },
             )
             if (audioFocusManager?.requestAudioFocus() != true) {
@@ -96,8 +125,10 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
                 return
             }
 
-            setupMediaSession(title, subtitle)
+            setupMediaSession(title = text, artist = "الذاكر")
             player.start()
+            currentlyPlayingId = id
+            currentlyPlayingText = text
             isPlaying = true
         } catch (error: Exception) {
             stopInternal(abandonFocus = true)
@@ -106,13 +137,13 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    private fun setupMediaSession(title: String, subtitle: String) {
+    private fun setupMediaSession(title: String, artist: String) {
         val session = MediaSession(appContext, "alzaker_audio_player")
         mediaSession = session
         session.setMetadata(
             MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, title)
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, subtitle)
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                 .build(),
         )
         session.setPlaybackState(
@@ -139,6 +170,8 @@ class AudioPlayerViewModel(private val appContext: Context) : ViewModel() {
             mediaSession?.release()
         }
         mediaSession = null
+        currentlyPlayingId = null
+        currentlyPlayingText = null
         isPlaying = false
         isPreparing = false
     }
