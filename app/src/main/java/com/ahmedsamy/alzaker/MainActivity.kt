@@ -29,6 +29,7 @@ import com.ahmedsamy.alzaker.ui.components.AudioOverlay
 import com.ahmedsamy.alzaker.ui.navigation.AppNavController
 import com.ahmedsamy.alzaker.ui.navigation.Route
 import com.ahmedsamy.alzaker.ui.screens.OnboardingScreen
+import com.ahmedsamy.alzaker.ui.screens.TabsScreen
 import com.ahmedsamy.alzaker.ui.theme.AlzakerTheme
 import com.ahmedsamy.alzaker.ui.theme.AmiriFontFamily
 import com.ahmedsamy.alzaker.ui.theme.ThemeName
@@ -63,7 +64,12 @@ class MainActivity : ComponentActivity() {
                                     navController.completeOnboarding()
                                 },
                             )
-                            Route.Tabs -> RoutePlaceholder(title = "الذاكر", themeName = themeName)
+                            Route.Tabs -> TabsScreen(
+                                selectedTab = navController.selectedTab,
+                                onTabSelected = navController::selectTab,
+                                appViewModel = appViewModel,
+                                themeName = themeName,
+                            )
                             is Route.DhikrDetails -> RoutePlaceholder(
                                 title = "تفاصيل الذكر",
                                 themeName = themeName,
