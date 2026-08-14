@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.alzaker.ui.AppViewModel
+import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
 import com.ahmedsamy.alzaker.ui.components.AppBackground
 import com.ahmedsamy.alzaker.ui.navigation.AppTab
 import com.ahmedsamy.alzaker.ui.theme.AmiriFontFamily
@@ -61,6 +62,7 @@ fun TabsScreen(
     selectedTab: AppTab,
     onTabSelected: (AppTab) -> Unit,
     appViewModel: AppViewModel,
+    audioViewModel: AudioPlayerViewModel,
     themeName: ThemeName,
     modifier: Modifier = Modifier,
 ) {
@@ -73,6 +75,11 @@ fun TabsScreen(
             AppTab.TASBIH -> TasbihScreen(
                 themeName = themeName,
                 hapticsEnabled = settings.hapticsEnabled,
+            )
+            AppTab.ADHKAR -> AdhkarScreen(
+                themeName = themeName,
+                appViewModel = appViewModel,
+                audioViewModel = audioViewModel,
             )
             else -> TabPlaceholder(tab = selectedTab, themeName = themeName)
         }

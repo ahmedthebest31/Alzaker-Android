@@ -7,33 +7,25 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ahmedsamy.alzaker.ui.AppViewModel
 import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
-import com.ahmedsamy.alzaker.ui.components.AppBackground
 import com.ahmedsamy.alzaker.ui.components.AudioOverlay
 import com.ahmedsamy.alzaker.ui.navigation.AppNavController
 import com.ahmedsamy.alzaker.ui.navigation.Route
+import com.ahmedsamy.alzaker.ui.screens.DhikrDetailsScreen
 import com.ahmedsamy.alzaker.ui.screens.OnboardingScreen
 import com.ahmedsamy.alzaker.ui.screens.TabsScreen
 import com.ahmedsamy.alzaker.ui.theme.AlzakerTheme
-import com.ahmedsamy.alzaker.ui.theme.AmiriFontFamily
 import com.ahmedsamy.alzaker.ui.theme.ThemeName
-import com.ahmedsamy.alzaker.ui.theme.themeColors
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,11 +60,14 @@ class MainActivity : ComponentActivity() {
                                 selectedTab = navController.selectedTab,
                                 onTabSelected = navController::selectTab,
                                 appViewModel = appViewModel,
+                                audioViewModel = audioViewModel,
                                 themeName = themeName,
                             )
-                            is Route.DhikrDetails -> RoutePlaceholder(
-                                title = "تفاصيل الذكر",
+                            is Route.DhikrDetails -> DhikrDetailsScreen(
+                                dhikr = route.dhikr,
+                                repeat = route.repeat,
                                 themeName = themeName,
+                                hapticsEnabled = settings.hapticsEnabled,
                             )
                         }
                         AudioOverlay(
@@ -92,24 +87,6 @@ class MainActivity : ComponentActivity() {
             BackHandler {
                 if (!navController.goBack()) finish()
             }
-        }
-    }
-}
-
-/**
- * Temporary placeholder for routes whose real screens land in later steps
- * (tabs in 8e-8i, dhikr details in 8g).
- */
-@Composable
-private fun RoutePlaceholder(title: String, themeName: ThemeName) {
-    AppBackground(colors = themeColors(themeName)) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = title,
-                color = Color.White,
-                fontSize = 24.sp,
-                fontFamily = AmiriFontFamily,
-            )
         }
     }
 }
