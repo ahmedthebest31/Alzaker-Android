@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
                                 appViewModel = appViewModel,
                                 audioViewModel = audioViewModel,
                                 themeName = themeName,
+                                onOpenDhikrDetails = navController::navigateToDhikrDetails,
                             )
                             is Route.DhikrDetails -> DhikrDetailsScreen(
                                 dhikr = route.dhikr,

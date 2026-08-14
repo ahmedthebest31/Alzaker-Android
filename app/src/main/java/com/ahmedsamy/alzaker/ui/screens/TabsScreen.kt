@@ -64,6 +64,7 @@ fun TabsScreen(
     appViewModel: AppViewModel,
     audioViewModel: AudioPlayerViewModel,
     themeName: ThemeName,
+    onOpenDhikrDetails: (dhikr: String, repeat: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val settings by appViewModel.settings.collectAsStateWithLifecycle()
@@ -81,7 +82,13 @@ fun TabsScreen(
                 appViewModel = appViewModel,
                 audioViewModel = audioViewModel,
             )
-            else -> TabPlaceholder(tab = selectedTab, themeName = themeName)
+            AppTab.FAVORITES -> FavoritesScreen(
+                themeName = themeName,
+                appViewModel = appViewModel,
+                audioViewModel = audioViewModel,
+                onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
+            )
+            AppTab.SETTINGS -> TabPlaceholder(tab = selectedTab, themeName = themeName)
         }
 
         Row(
