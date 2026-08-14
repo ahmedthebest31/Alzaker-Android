@@ -36,6 +36,11 @@ key.properties
 PROGRESS_TRACKER.md
 project_analysis_report.md
 
+# Stale template package left on disk; deletion blocked by Windows file lock.
+# Delete these lines once the directories are removed.
+app/src/main/java/com/ahmedsamy/app/
+app/src/test/java/com/ahmedsamy/app/
+
 # Log/OS Files
 *.log
 build_log.txt
