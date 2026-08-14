@@ -42,11 +42,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.alzaker.ui.AppViewModel
 import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
-import com.ahmedsamy.alzaker.ui.components.AppBackground
 import com.ahmedsamy.alzaker.ui.navigation.AppTab
 import com.ahmedsamy.alzaker.ui.theme.AmiriFontFamily
 import com.ahmedsamy.alzaker.ui.theme.ThemeName
-import com.ahmedsamy.alzaker.ui.theme.themeColors
 import com.ahmedsamy.alzaker.util.HapticFeedbackType
 import com.ahmedsamy.alzaker.util.Haptics
 
@@ -88,7 +86,10 @@ fun TabsScreen(
                 audioViewModel = audioViewModel,
                 onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
             )
-            AppTab.SETTINGS -> TabPlaceholder(tab = selectedTab, themeName = themeName)
+            AppTab.SETTINGS -> SettingsScreen(
+                themeName = themeName,
+                appViewModel = appViewModel,
+            )
         }
 
         Row(
@@ -175,19 +176,5 @@ private fun TabItem(
             fontFamily = AmiriFontFamily,
             textAlign = TextAlign.Center,
         )
-    }
-}
-
-@Composable
-private fun TabPlaceholder(tab: AppTab, themeName: ThemeName) {
-    AppBackground(colors = themeColors(themeName)) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = tab.title,
-                color = Color.White,
-                fontSize = 24.sp,
-                fontFamily = AmiriFontFamily,
-            )
-        }
     }
 }
