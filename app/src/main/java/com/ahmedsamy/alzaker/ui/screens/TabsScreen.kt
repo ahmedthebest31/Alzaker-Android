@@ -70,6 +70,10 @@ fun TabsScreen(
     Box(modifier = modifier.fillMaxSize()) {
         when (selectedTab) {
             AppTab.HOME -> HomeScreen(themeName = themeName, appViewModel = appViewModel)
+            AppTab.TASBIH -> TasbihScreen(
+                themeName = themeName,
+                hapticsEnabled = settings.hapticsEnabled,
+            )
             else -> TabPlaceholder(tab = selectedTab, themeName = themeName)
         }
 
