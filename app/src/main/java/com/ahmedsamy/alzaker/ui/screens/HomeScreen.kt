@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.alzaker.ui.AppViewModel
-import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
 import com.ahmedsamy.alzaker.ui.components.ActionButton
 import com.ahmedsamy.alzaker.ui.components.AppBackground
 import com.ahmedsamy.alzaker.ui.components.AppToast
@@ -63,7 +62,6 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     themeName: ThemeName,
     appViewModel: AppViewModel,
-    audioViewModel: AudioPlayerViewModel,
     modifier: Modifier = Modifier,
 ) {
     val theme = themeColors(themeName)
@@ -71,7 +69,6 @@ fun HomeScreen(
     val context = LocalContext.current
     val settings by appViewModel.settings.collectAsStateWithLifecycle()
     val favoriteIds by appViewModel.favoriteIds.collectAsStateWithLifecycle()
-    val playingText = audioViewModel.currentlyPlayingText
 
     var currentDhikr by remember { mutableStateOf(appViewModel.dhikrRepository.getRandomDhikr()) }
     var visibleDhikr by remember { mutableStateOf(currentDhikr) }
@@ -218,7 +215,7 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .padding(bottom = if (playingText != null) 110.dp else 24.dp),
+                    .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

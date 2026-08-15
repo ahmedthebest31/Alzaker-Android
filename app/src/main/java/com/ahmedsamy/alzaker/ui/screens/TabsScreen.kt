@@ -31,11 +31,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -72,41 +77,51 @@ fun TabsScreen(
 ) {
     val settings by appViewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val density = LocalDensity.current
+    val playingText = audioViewModel.currentlyPlayingText
+
+    var tabBarHeightPx by remember { mutableStateOf(0) }
+    val tabBarHeight = with(density) { tabBarHeightPx.toDp() }
 
     Box(modifier = modifier.fillMaxSize()) {
-        AnimatedContent(
-            targetState = selectedTab,
-            transitionSpec = {
-                fadeIn(tween(durationMillis = 250)) togetherWith fadeOut(tween(durationMillis = 150))
-            },
-            label = "tabContent",
-        ) { tab ->
-            when (tab) {
-                AppTab.HOME -> HomeScreen(
-                    themeName = themeName,
-                    appViewModel = appViewModel,
-                    audioViewModel = audioViewModel,
-                )
-                AppTab.TASBIH -> TasbihScreen(
-                    themeName = themeName,
-                    hapticsEnabled = settings.hapticsEnabled,
-                )
-                AppTab.ADHKAR -> AdhkarScreen(
-                    themeName = themeName,
-                    appViewModel = appViewModel,
-                    audioViewModel = audioViewModel,
-                    onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
-                )
-                AppTab.FAVORITES -> FavoritesScreen(
-                    themeName = themeName,
-                    appViewModel = appViewModel,
-                    audioViewModel = audioViewModel,
-                    onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
-                )
-                AppTab.SETTINGS -> SettingsScreen(
-                    themeName = themeName,
-                    appViewModel = appViewModel,
-                )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = if (playingText != null) PlayerClearanceBottomPadding else tabBarHeight),
+        ) {
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    fadeIn(tween(durationMillis = 250)) togetherWith fadeOut(tween(durationMillis = 150))
+                },
+                label = "tabContent",
+            ) { tab ->
+                when (tab) {
+                    AppTab.HOME -> HomeScreen(
+                        themeName = themeName,
+                        appViewModel = appViewModel,
+                    )
+                    AppTab.TASBIH -> TasbihScreen(
+                        themeName = themeName,
+                        hapticsEnabled = settings.hapticsEnabled,
+                    )
+                    AppTab.ADHKAR -> AdhkarScreen(
+                        themeName = themeName,
+                        appViewModel = appViewModel,
+                        audioViewModel = audioViewModel,
+                        onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
+                    )
+                    AppTab.FAVORITES -> FavoritesScreen(
+                        themeName = themeName,
+                        appViewModel = appViewModel,
+                        audioViewModel = audioViewModel,
+                        onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
+                    )
+                    AppTab.SETTINGS -> SettingsScreen(
+                        themeName = themeName,
+                        appViewModel = appViewModel,
+                    )
+                }
             }
         }
 
@@ -116,6 +131,7 @@ fun TabsScreen(
                 .fillMaxWidth()
                 .background(Color(0xFF000000).copy(alpha = 0.4f))
                 .navigationBarsPadding()
+                .onSizeChanged { tabBarHeightPx = it.height }
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
@@ -196,3 +212,12 @@ private fun TabItem(
         )
     }
 }
+
+/**
+ * Bottom padding applied to the tab content while the floating audio player is
+ * visible. The player (AudioOverlay) floats at bottom=90dp and its bar is
+ * ~68dp tall (12dp padding + 44dp buttons), so its top edge is ~158dp above
+ * the screen bottom. 180dp keeps every screen's bottom-anchored content
+ * (e.g. the home action buttons) fully above the player on any device.
+ */
+private val PlayerClearanceBottomPadding = 180.dp
