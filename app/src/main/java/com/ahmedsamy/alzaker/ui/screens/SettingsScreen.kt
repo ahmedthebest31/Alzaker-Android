@@ -537,16 +537,16 @@ fun SettingsScreen(
             }
 
             SettingsSection(
-                title = "تذكير حكمة (صامت)",
+                title = "إشعارات التذكيرات المقروءة",
                 fontSizeMultiplier = fontSizeMultiplier,
                 modifier = Modifier.padding(bottom = 20.dp),
             ) {
                 SettingRow(
                     label = "تفعيل تذكير الحكمة",
-                    description = "إشعار صامت يحتوي على ذكر أو حكمة عشوائية.",
+                    description = "إشعار يحتوي على ذكر أو حكمة عشوائية.",
                     value = settings.isHikmahEnabled,
                     onValueChange = handleHikmahToggle,
-                    accessibilityHint = "يسمح لك بتفعيل أو تعطيل إشعارات الحكم والأذكار الصامتة.",
+                    accessibilityHint = "يسمح لك بتفعيل أو تعطيل إشعارات الحكم والأذكار.",
                     fontSizeMultiplier = fontSizeMultiplier,
                 )
                 Column(

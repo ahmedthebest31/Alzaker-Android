@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ahmedsamy.alzaker.data.local.TasbihStore
 import com.ahmedsamy.alzaker.ui.AppViewModel
 import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
 import com.ahmedsamy.alzaker.ui.navigation.AppTab
@@ -73,6 +74,7 @@ fun TabsScreen(
     audioViewModel: AudioPlayerViewModel,
     themeName: ThemeName,
     onOpenDhikrDetails: (dhikr: String, repeat: Int) -> Unit,
+    tasbihStore: TasbihStore,
     modifier: Modifier = Modifier,
 ) {
     val settings by appViewModel.settings.collectAsStateWithLifecycle()
@@ -104,6 +106,7 @@ fun TabsScreen(
                     AppTab.TASBIH -> TasbihScreen(
                         themeName = themeName,
                         hapticsEnabled = settings.hapticsEnabled,
+                        tasbihStore = tasbihStore,
                     )
                     AppTab.ADHKAR -> AdhkarScreen(
                         themeName = themeName,

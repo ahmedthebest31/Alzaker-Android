@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+
+    <!--
+        Widget colors. API 31+ resolves these to Material You system palettes
+        (values-v31/colors.xml); this base file is the dark brand fallback for
+        API 26-30, matching the dhikr widget pill (#E6303030 + #33FFFFFF).
+    -->
+    <color name="widget_card_bg">#E6303030</color>
+    <color name="widget_card_stroke">#33FFFFFF</color>
+    <color name="widget_count">#FFFFFF</color>
+    <color name="widget_count_reached">#FFD700</color>
+    <color name="widget_progress_track">#4DFFFFFF</color>
+    <color name="widget_progress_fill">#FFD700</color>
+    <color name="widget_nm_label">#CCFFFFFF</color>
+    <color name="widget_reset_text">#FFFFFF</color>
+    <color name="widget_copy_text">#FFD700</color>
 </resources>

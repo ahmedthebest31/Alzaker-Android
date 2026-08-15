@@ -16,6 +16,15 @@
           foreground service.
     -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!--
+        VIBRATE_ALWAYS (added in API 33, normal level, auto-granted) lets the
+        app vibrate while in the background. The tasbih widget tap is handled
+        by a BroadcastReceiver in the app process while the app is backgrounded,
+        and Android 13+ otherwise suppresses background vibrations entirely.
+    -->
+    <uses-permission
+        android:name="android.permission.VIBRATE_ALWAYS"
+        tools:targetApi="33" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission
@@ -108,6 +117,45 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/dzikr_widget_info" />
         </receiver>
+
+        <!--
+            Home-screen tasbih widget: renders the shared tasbih count/goal and
+            mirrors the tasbih tab (same store, same haptics, system colors).
+            The provider renders the card; a tap on it is a broadcast to
+            TasbihWidgetReceiver (explicit-class PendingIntent, so it is
+            non-exported) which increments the store with the app's haptics.
+            BOOT_COMPLETED / MY_PACKAGE_REPLACED re-render after a reboot or an
+            app update.
+        -->
+        <receiver
+            android:name=".ui.widget.TasbihWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_tasbih_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/tasbih_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".ui.widget.TasbihWidgetReceiver"
+            android:exported="false" />
+
+        <!--
+            Confirmation dialog for the tasbih widget's reset button (widget
+            long-press is owned by the launcher, so reset is a small button
+            that opens this dialog activity). Non-exported and kept out of
+            recents.
+        -->
+        <activity
+            android:name=".ui.widget.TasbihResetActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.App.Dialog" />
     </application>
 
 </manifest>

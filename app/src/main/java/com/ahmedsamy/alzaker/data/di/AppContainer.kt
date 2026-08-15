@@ -2,6 +2,8 @@ package com.ahmedsamy.alzaker.data.di
 
 import android.content.Context
 import com.ahmedsamy.alzaker.data.local.LocalDhikrDataSource
+import com.ahmedsamy.alzaker.data.local.SharedPreferencesTasbihStore
+import com.ahmedsamy.alzaker.data.local.TasbihStore
 import com.ahmedsamy.alzaker.data.local.alzakerDataStore
 import com.ahmedsamy.alzaker.data.repository.DhikrRepository
 import com.ahmedsamy.alzaker.data.repository.DhikrRepositoryImpl
@@ -38,5 +40,9 @@ class AppContainer(context: Context) {
 
     val alarmScheduler: AlarmScheduler by lazy {
         AlarmSchedulerImpl(appContext)
+    }
+
+    val tasbihStore: TasbihStore by lazy {
+        SharedPreferencesTasbihStore(appContext)
     }
 }

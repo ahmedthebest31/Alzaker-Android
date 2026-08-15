@@ -7,7 +7,7 @@ import android.content.Context
 /**
  * Notification channels, mirroring the legacy expo-notifications setup in
  * utils/notifications.ts:
- * - hikmah_channel "تذكير حكمة (صامت)": silent wisdom notifications.
+ * - hikmah_channel "إشعارات التذكيرات المقروءة": silent wisdom notifications.
  * - tadhkir_channel "تذكير مسموع": audible reminder channel. The audio itself
  *   is played by MediaPlayer; the channel stays silent exactly like the legacy
  *   app (importance DEFAULT, no sound).
@@ -29,7 +29,7 @@ object NotificationChannels {
 
         val hikmahChannel = NotificationChannel(
             HIKMAH_CHANNEL_ID,
-            "تذكير حكمة (صامت)",
+            "إشعارات التذكيرات المقروءة",
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
             setSound(null, null)

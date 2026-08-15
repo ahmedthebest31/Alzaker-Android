@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         notificationDhikrText.value = intent.getStringExtra(ReminderReceiver.EXTRA_NOTIFICATION_DHIKR_TEXT)
         enableEdgeToEdge()
+        val tasbihStore = (application as AlzakerApp).container.tasbihStore
         setContent {
             val appViewModel: AppViewModel = viewModel(factory = AppViewModel.Factory)
             val audioViewModel: AudioPlayerViewModel = viewModel(factory = AudioPlayerViewModel.Factory)
@@ -114,6 +115,7 @@ class MainActivity : ComponentActivity() {
                                     audioViewModel = audioViewModel,
                                     themeName = themeName,
                                     onOpenDhikrDetails = navController::navigateToDhikrDetails,
+                                    tasbihStore = tasbihStore,
                                 )
                                 is Route.DhikrDetails -> DhikrDetailsScreen(
                                     dhikr = route.dhikr,

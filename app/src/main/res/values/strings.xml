@@ -1,4 +1,9 @@
 <resources>
     <string name="hello_world">Hello World!</string>
-    <string name="widget_name">الذكر</string>
+    <string name="widget_name">شاشة الأذكار العشوائية</string>
+    <string name="widget_tasbih_name">المسبحة</string>
+    <string name="widget_tasbih_reset">تصفير</string>
+    <string name="widget_tasbih_reset_a11y">تصفير العداد</string>
+    <string name="widget_dhikr_copy">نسخ</string>
+    <string name="widget_dhikr_copy_a11y">نسخ الذكر إلى الحافظة</string>
 </resources>

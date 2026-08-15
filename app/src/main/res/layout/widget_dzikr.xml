@@ -2,23 +2,37 @@
 <!-- Widget root, 100% stock views only: OEM launchers refuse to inflate
      custom view classes or custom font resources inside RemoteViews
      ("can't display widget"). The fade-in is produced by the provider via two
-     RemoteViews applies (setAlpha 0 -> 1). -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     RemoteViews applies (setAlpha 0 -> 1). Colors are @color/... qualified so
+     API 31+ follows Material You and API 26-30 get the brand fallback. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
         android:id="@+id/widget_dhikr_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:ellipsize="end"
         android:gravity="center"
         android:lineSpacingMultiplier="1.2"
-        android:maxLines="3"
-        android:textColor="#FFFFFF"
+        android:maxLines="2"
+        android:textColor="@color/widget_count"
         android:textSize="16sp" />
-</FrameLayout>
+
+    <TextView
+        android:id="@+id/widget_dhikr_copy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@string/widget_dhikr_copy_a11y"
+        android:padding="6dp"
+        android:text="@string/widget_dhikr_copy"
+        android:textColor="@color/widget_copy_text"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>

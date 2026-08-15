@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 /**
  * Fires a reminder chain:
  * - HIKMAH: posts a silent wisdom notification with a fresh random dhikr,
- *   mirroring legacy scheduleHikmahNotification (title 'الذاكر - ذكر لله').
+ *   mirroring legacy scheduleHikmahNotification (title 'أَذْكُرُ اللهَ').
  * - TADHKIR: starts [AudioReminderService] to play a random audio drop.
  * Both skip the actual fire while quiet hours are active (legacy
  * AudioDropWorker behavior), then re-schedule the next one-shot alarm
@@ -91,7 +91,7 @@ class ReminderReceiver : BroadcastReceiver() {
             NotificationChannels.HIKMAH_CHANNEL_ID,
         )
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("الذاكر - ذكر لله")
+            .setContentTitle("أَذْكُرُ اللهَ")
             .setContentText(dhikrText)
             .setStyle(NotificationCompat.BigTextStyle().bigText(dhikrText))
             .setAutoCancel(true)

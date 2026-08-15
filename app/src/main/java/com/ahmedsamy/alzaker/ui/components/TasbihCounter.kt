@@ -67,15 +67,34 @@ fun TasbihCounter(
     showGoalInput: Boolean = false,
     modifier: Modifier = Modifier,
     hapticsEnabled: Boolean = true,
+    externalCount: Int? = null,
+    externalGoal: Int? = null,
+    onCountChange: ((Int) -> Unit)? = null,
+    onGoalChange: ((Int) -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val fontSizeMultiplier = LocalFontSizeMultiplier.current
     val primaryColor = MaterialTheme.colorScheme.primary
 
-    var count by remember { mutableStateOf(0) }
-    var tasbihGoal by remember { mutableStateOf(initialRepeatCount?.takeIf { it > 0 }) }
+    // In external mode the count and goal are owned by the caller (the tasbih
+    // tab binds them to TasbihStore, a goal of 0 meaning "no goal"); otherwise
+    // they stay local so DhikrDetails keeps its current behavior.
+    val external = externalCount != null || externalGoal != null
+    var localCount by remember { mutableStateOf(0) }
+    var localGoal by remember { mutableStateOf(initialRepeatCount?.takeIf { it > 0 }) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     var celebrationGoal by remember { mutableStateOf<Int?>(null) }
+
+    val count = externalCount ?: localCount
+    val tasbihGoal: Int? = if (external) externalGoal?.takeIf { it > 0 } else localGoal
+
+    fun setCountValue(value: Int) {
+        if (external) onCountChange?.invoke(value) else localCount = value
+    }
+
+    fun setGoalValue(value: Int) {
+        if (external) onGoalChange?.invoke(value) else localGoal = if (value > 0) value else null
+    }
 
     val isGoalReached = tasbihGoal != null && count >= (tasbihGoal ?: 0)
 
@@ -93,7 +112,7 @@ fun TasbihCounter(
     fun incrementCount() {
         Haptics.trigger(context, HapticFeedbackType.ImpactMedium, hapticsEnabled)
         val newCount = count + 1
-        count = newCount
+        setCountValue(newCount)
         val goal = tasbihGoal
         if (goal != null && newCount == goal) {
             Haptics.trigger(context, HapticFeedbackType.NotificationSuccess, hapticsEnabled)
@@ -138,8 +157,7 @@ fun TasbihCounter(
                         BasicTextField(
                             value = tasbihGoal?.toString() ?: "",
                             onValueChange = { text ->
-                                val parsed = text.toIntOrNull()
-                                tasbihGoal = if (parsed == null || parsed <= 0) null else parsed
+                                setGoalValue(text.toIntOrNull() ?: 0)
                             },
                             singleLine = true,
                             textStyle = TextStyle(
@@ -238,7 +256,7 @@ fun TasbihCounter(
                     .background(Color.White)
                     .clickable {
                         Haptics.trigger(context, HapticFeedbackType.NotificationWarning, hapticsEnabled)
-                        count = 0
+                        setCountValue(0)
                         showToast("تم إعادة ضبط العداد.")
                     }
                     .padding(vertical = 12.dp, horizontal = 40.dp)
