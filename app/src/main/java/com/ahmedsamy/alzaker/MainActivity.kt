@@ -1,5 +1,6 @@
 package com.ahmedsamy.alzaker
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -15,14 +16,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ahmedsamy.alzaker.reminder.ReminderReceiver
 import com.ahmedsamy.alzaker.ui.AppViewModel
 import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
+import com.ahmedsamy.alzaker.ui.components.AppToast
 import com.ahmedsamy.alzaker.ui.components.AudioOverlay
 import com.ahmedsamy.alzaker.ui.navigation.AppNavController
 import com.ahmedsamy.alzaker.ui.navigation.Route
@@ -31,10 +37,23 @@ import com.ahmedsamy.alzaker.ui.screens.OnboardingScreen
 import com.ahmedsamy.alzaker.ui.screens.TabsScreen
 import com.ahmedsamy.alzaker.ui.theme.AlzakerTheme
 import com.ahmedsamy.alzaker.ui.theme.ThemeName
+import com.ahmedsamy.alzaker.util.Accessibility
+import com.ahmedsamy.alzaker.util.Clipboard
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+
+    /**
+     * The dhikr text coming from a tapped hikmah notification (see
+     * ReminderReceiver). Written in onCreate/onNewIntent and consumed by the
+     * root composable, which copies it to the clipboard and shows a toast —
+     * mirroring the legacy notification-response listener.
+     */
+    private val notificationDhikrText = mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        notificationDhikrText.value = intent.getStringExtra(ReminderReceiver.EXTRA_NOTIFICATION_DHIKR_TEXT)
         enableEdgeToEdge()
         setContent {
             val appViewModel: AppViewModel = viewModel(factory = AppViewModel.Factory)
@@ -42,6 +61,26 @@ class MainActivity : ComponentActivity() {
             val settings by appViewModel.settings.collectAsStateWithLifecycle()
             val navController = remember { AppNavController() }
             val themeName = ThemeName.fromKey(settings.themeName)
+            val context = LocalContext.current
+
+            var copiedToClipboardToast by remember { mutableStateOf<String?>(null) }
+
+            LaunchedEffect(notificationDhikrText.value) {
+                val dhikr = notificationDhikrText.value
+                if (dhikr != null) {
+                    notificationDhikrText.value = null
+                    runCatching { Clipboard.copyText(context, "dhikr", dhikr) }
+                    copiedToClipboardToast = "تم نسخ الذكر إلى الحافظة."
+                    Accessibility.announce(context, "تم نسخ الذكر إلى الحافظة.")
+                }
+            }
+
+            LaunchedEffect(copiedToClipboardToast) {
+                if (copiedToClipboardToast != null) {
+                    delay(3000)
+                    copiedToClipboardToast = null
+                }
+            }
 
             LaunchedEffect(settings.hasLaunched) {
                 navController.setInitialRoute(!settings.hasLaunched)
@@ -94,6 +133,7 @@ class MainActivity : ComponentActivity() {
                                 else audioViewModel.resume()
                             },
                         )
+                        AppToast(message = copiedToClipboardToast.orEmpty(), visible = copiedToClipboardToast != null)
                     }
                 }
             }
@@ -102,5 +142,11 @@ class MainActivity : ComponentActivity() {
                 if (!navController.goBack()) finish()
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        notificationDhikrText.value = intent.getStringExtra(ReminderReceiver.EXTRA_NOTIFICATION_DHIKR_TEXT)
     }
 }

@@ -1,5 +1,6 @@
 package com.ahmedsamy.alzaker.reminder
 
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.ahmedsamy.alzaker.AlzakerApp
+import com.ahmedsamy.alzaker.MainActivity
 import com.ahmedsamy.alzaker.R
 import com.ahmedsamy.alzaker.data.di.AppContainer
 import java.util.Calendar
@@ -25,6 +27,16 @@ import kotlinx.coroutines.launch
  * (self-rescheduling chain, D6).
  */
 class ReminderReceiver : BroadcastReceiver() {
+
+    companion object {
+        /**
+         * The dhikr text carried in the hikmah notification's contentIntent so
+         * MainActivity can copy it to the clipboard on tap, mirroring the
+         * legacy Notifications.addNotificationResponseReceivedListener
+         * behavior in app/(tabs)/settings.tsx.
+         */
+        const val EXTRA_NOTIFICATION_DHIKR_TEXT = "extra_notification_dhikr_text"
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
         val typeName = intent.getStringExtra(AlarmSchedulerImpl.EXTRA_REMINDER_TYPE)
@@ -66,6 +78,14 @@ class ReminderReceiver : BroadcastReceiver() {
 
     private fun postHikmahNotification(context: Context, container: AppContainer) {
         val dhikrText = container.dhikrRepository.getRandomDhikr()?.dhikr ?: return
+        val contentIntent = PendingIntent.getActivity(
+            context,
+            NotificationChannels.HIKMAH_NOTIFICATION_ID,
+            Intent(context, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .putExtra(EXTRA_NOTIFICATION_DHIKR_TEXT, dhikrText),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification = NotificationCompat.Builder(
             context,
             NotificationChannels.HIKMAH_CHANNEL_ID,
@@ -75,6 +95,7 @@ class ReminderReceiver : BroadcastReceiver() {
             .setContentText(dhikrText)
             .setStyle(NotificationCompat.BigTextStyle().bigText(dhikrText))
             .setAutoCancel(true)
+            .setContentIntent(contentIntent)
             .build()
         NotificationManagerCompat.from(context).notify(NotificationChannels.HIKMAH_NOTIFICATION_ID, notification)
     }
