@@ -11,11 +11,15 @@ import android.content.Context
  * - tadhkir_channel "تذكير مسموع": audible reminder channel. The audio itself
  *   is played by MediaPlayer; the channel stays silent exactly like the legacy
  *   app (importance DEFAULT, no sound).
+ * - alzaker_media_channel "تشغيل الأذكار": silent (IMPORTANCE_LOW) media
+ *   notification channel used by the dhikr media foreground service, so the
+ *   media player notification shows in the shade without making a sound.
  */
 object NotificationChannels {
 
     const val HIKMAH_CHANNEL_ID = "hikmah_channel"
     const val TADHKIR_CHANNEL_ID = "tadhkir_channel"
+    const val MEDIA_CHANNEL_ID = "alzaker_media_channel"
 
     const val HIKMAH_NOTIFICATION_ID = 1001
 
@@ -39,7 +43,17 @@ object NotificationChannels {
             setSound(null, null)
         }
 
+        val mediaChannel = NotificationChannel(
+            MEDIA_CHANNEL_ID,
+            "تشغيل الأذكار",
+            NotificationManager.IMPORTANCE_LOW,
+        ).apply {
+            setSound(null, null)
+            setShowBadge(false)
+        }
+
         manager.createNotificationChannel(hikmahChannel)
         manager.createNotificationChannel(tadhkirChannel)
+        manager.createNotificationChannel(mediaChannel)
     }
 }

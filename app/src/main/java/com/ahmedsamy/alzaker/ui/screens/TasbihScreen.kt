@@ -1,5 +1,7 @@
 package com.ahmedsamy.alzaker.ui.screens
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ahmedsamy.alzaker.ui.components.AppBackground
@@ -18,6 +20,10 @@ fun TasbihScreen(
     modifier: Modifier = Modifier,
 ) {
     AppBackground(colors = themeColors(themeName), modifier = modifier) {
-        TasbihCounter(showGoalInput = true, hapticsEnabled = hapticsEnabled)
+        TasbihCounter(
+            showGoalInput = true,
+            hapticsEnabled = hapticsEnabled,
+            modifier = Modifier.statusBarsPadding(),
+        )
     }
 }

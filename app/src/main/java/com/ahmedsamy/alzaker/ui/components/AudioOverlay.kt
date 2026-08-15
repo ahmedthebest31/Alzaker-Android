@@ -18,9 +18,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +44,10 @@ import com.ahmedsamy.alzaker.ui.theme.themeColors
 
 /**
  * Bottom audio bar mirroring the legacy AudioOverlay: slides up above the tab
- * bar while a dhikr is playing and shows the current dhikr text plus stop and
- * play/pause controls. The dark translucent background approximates the legacy
- * expo-blur dark tint. [themeName] drives the highContrast button colors.
+ * bar while a dhikr is playing and shows the current dhikr text plus a close
+ * (X) button that stops playback and dismisses the bar, and a play/pause
+ * control. The dark translucent background approximates the legacy expo-blur
+ * dark tint. [themeName] drives the highContrast button colors.
  */
 @Composable
 fun AudioOverlay(
@@ -111,13 +112,13 @@ fun AudioOverlay(
                         .size(44.dp)
                         .clickable(onClick = onStop)
                         .semantics {
-                            contentDescription = "إيقاف مشغل الصوت"
+                            contentDescription = "إغلاق المشغل وإيقاف الذكر الصوتي"
                             role = Role.Button
                         },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Stop,
+                        imageVector = Icons.Filled.Close,
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(24.dp),

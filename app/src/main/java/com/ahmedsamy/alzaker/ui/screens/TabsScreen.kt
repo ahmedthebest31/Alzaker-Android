@@ -1,5 +1,10 @@
 package com.ahmedsamy.alzaker.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -69,27 +74,40 @@ fun TabsScreen(
     val context = LocalContext.current
 
     Box(modifier = modifier.fillMaxSize()) {
-        when (selectedTab) {
-            AppTab.HOME -> HomeScreen(themeName = themeName, appViewModel = appViewModel)
-            AppTab.TASBIH -> TasbihScreen(
-                themeName = themeName,
-                hapticsEnabled = settings.hapticsEnabled,
-            )
-            AppTab.ADHKAR -> AdhkarScreen(
-                themeName = themeName,
-                appViewModel = appViewModel,
-                audioViewModel = audioViewModel,
-            )
-            AppTab.FAVORITES -> FavoritesScreen(
-                themeName = themeName,
-                appViewModel = appViewModel,
-                audioViewModel = audioViewModel,
-                onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
-            )
-            AppTab.SETTINGS -> SettingsScreen(
-                themeName = themeName,
-                appViewModel = appViewModel,
-            )
+        AnimatedContent(
+            targetState = selectedTab,
+            transitionSpec = {
+                fadeIn(tween(durationMillis = 250)) togetherWith fadeOut(tween(durationMillis = 150))
+            },
+            label = "tabContent",
+        ) { tab ->
+            when (tab) {
+                AppTab.HOME -> HomeScreen(
+                    themeName = themeName,
+                    appViewModel = appViewModel,
+                    audioViewModel = audioViewModel,
+                )
+                AppTab.TASBIH -> TasbihScreen(
+                    themeName = themeName,
+                    hapticsEnabled = settings.hapticsEnabled,
+                )
+                AppTab.ADHKAR -> AdhkarScreen(
+                    themeName = themeName,
+                    appViewModel = appViewModel,
+                    audioViewModel = audioViewModel,
+                    onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
+                )
+                AppTab.FAVORITES -> FavoritesScreen(
+                    themeName = themeName,
+                    appViewModel = appViewModel,
+                    audioViewModel = audioViewModel,
+                    onOpenCounter = { item -> onOpenDhikrDetails(item.dhikr, item.repeat) },
+                )
+                AppTab.SETTINGS -> SettingsScreen(
+                    themeName = themeName,
+                    appViewModel = appViewModel,
+                )
+            }
         }
 
         Row(
@@ -102,7 +120,7 @@ fun TabsScreen(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AppTab.entries.forEach { tab ->
+            AppTab.entries.reversed().forEach { tab ->
                 TabItem(
                     tab = tab,
                     selected = tab == selectedTab,
@@ -158,7 +176,7 @@ private fun TabItem(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .semantics {
                 contentDescription = tab.title
-                role = Role.Button
+                role = Role.Tab
                 this.selected = selected
             },
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -3,6 +3,7 @@ package com.ahmedsamy.alzaker.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.StopCircle
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -47,15 +50,22 @@ import com.ahmedsamy.alzaker.util.Haptics
 
 /**
  * A single dhikr entry card, mirroring the legacy DhikrCard: favorite heart,
- * repeat-count circle and an optional audio play/stop toggle. Tapping the
- * card body opens the dhikr counter. All state (favorite/playing) is owned by
- * the caller; this composable only renders and reports taps.
+ * repeat-count circle and an audio play/stop toggle. Tapping the card body
+ * opens the dhikr counter.
+ *
+ * Screen-reader structure (mergeDescendants = false on the card): the card
+ * itself announces the dhikr text and opens the counter, the repeat count is a
+ * separate focusable node ("عدد مرات التكرار: N"), and the favorite heart and
+ * audio button are independent buttons. The audio button is enlarged (56dp)
+ * for elderly users and its label changes to "إيقاف الذكر الحالي" while
+ * playing. All state (favorite/playing) is owned by the caller.
  */
 @Composable
 fun DhikrCard(
     item: DhikrItem,
     isFavorite: Boolean,
     isPlaying: Boolean,
+    isBuffering: Boolean = false,
     onFavoriteToggle: () -> Unit,
     onAudioToggle: () -> Unit,
     onOpenCounter: () -> Unit,
@@ -78,6 +88,9 @@ fun DhikrCard(
                     onOpenCounter()
                 },
             )
+            .semantics(mergeDescendants = false) {
+                contentDescription = "${item.dhikr}. اضغط لفتح صفحة الذكر"
+            }
             .padding(16.dp),
     ) {
         Text(
@@ -89,7 +102,8 @@ fun DhikrCard(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 16.dp)
+                .clearAndSetSemantics {},
         )
 
         Row(
@@ -98,7 +112,7 @@ fun DhikrCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
@@ -116,24 +130,25 @@ fun DhikrCard(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = null,
                     tint = if (isFavorite) LegacyColors.Red else Color.White,
-                    modifier = Modifier.size(30.dp),
+                    modifier = Modifier.size(32.dp),
                 )
             }
 
             Box(
                 modifier = Modifier
-                    .widthIn(min = 48.dp)
-                    .height(48.dp)
-                    .background(Gold.copy(alpha = 0.1f), RoundedCornerShape(24.dp))
-                    .border(width = 2.dp, color = Gold, shape = RoundedCornerShape(24.dp))
+                    .widthIn(min = 52.dp)
+                    .height(52.dp)
+                    .background(Gold.copy(alpha = 0.1f), RoundedCornerShape(26.dp))
+                    .border(width = 2.dp, color = Gold, shape = RoundedCornerShape(26.dp))
                     .padding(horizontal = 12.dp)
+                    .focusable()
                     .semantics(mergeDescendants = true) {
                         contentDescription = "عدد مرات التكرار: ${item.repeat}"
                     },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = item.repeat.toString(),
+                    text = "×${item.repeat}",
                     color = Gold,
                     fontSize = (20 * fontSizeMultiplier).sp,
                     fontWeight = FontWeight.Bold,
@@ -144,9 +159,14 @@ fun DhikrCard(
             if (item.audioUrl != null) {
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(56.dp)
                         .clip(CircleShape)
-                        .background(if (isPlaying) Color.White else Color.Transparent)
+                        .background(
+                            when {
+                                isPlaying || isBuffering -> Gold
+                                else -> Color.White.copy(alpha = 0.15f)
+                            },
+                        )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             onClick = {
@@ -155,17 +175,29 @@ fun DhikrCard(
                             },
                         )
                         .semantics {
-                            contentDescription = if (isPlaying) "إيقاف الذكر صوتياً" else "تشغيل الذكر صوتياً"
+                            contentDescription = if (isPlaying) {
+                                "إيقاف الذكر الحالي صوتياً"
+                            } else {
+                                "تشغيل الذكر صوتياً"
+                            }
                             role = Role.Button
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Outlined.StopCircle else Icons.Outlined.PlayCircle,
-                        contentDescription = null,
-                        tint = if (isPlaying) primaryColor else Color.White,
-                        modifier = Modifier.size(30.dp),
-                    )
+                    if (isBuffering) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(36.dp),
+                            color = if (isPlaying) LegacyColors.Black else Gold,
+                            strokeWidth = 3.dp,
+                        )
+                    } else {
+                        Icon(
+                            imageVector = if (isPlaying) Icons.Outlined.StopCircle else Icons.Outlined.PlayCircle,
+                            contentDescription = null,
+                            tint = if (isPlaying || isBuffering) LegacyColors.Black else primaryColor,
+                            modifier = Modifier.size(36.dp),
+                        )
+                    }
                 }
             }
         }

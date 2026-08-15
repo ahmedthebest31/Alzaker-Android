@@ -105,12 +105,12 @@ fun TasbihCounter(
         modifier = modifier
             .fillMaxSize()
             .padding(20.dp),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             if (showGoalInput) {
                 Row(
@@ -233,7 +233,7 @@ fun TasbihCounter(
 
             Box(
                 modifier = Modifier
-                    .padding(top = 40.dp)
+                    .padding(top = 8.dp)
                     .clip(RoundedCornerShape(30.dp))
                     .background(Color.White)
                     .clickable {

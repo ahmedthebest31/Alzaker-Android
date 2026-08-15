@@ -74,6 +74,18 @@
             android:name=".reminder.AudioReminderService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
+
+        <!--
+            DhikrAudioService is the dhikr media player: a foreground
+            mediaPlayback service so playback continues with the screen locked
+            or the app dismissed, with media controls in the notification shade
+            and on the lock screen (media session). Started from the audio
+            cards / overlay in the foreground; never exported.
+        -->
+        <service
+            android:name=".audio.DhikrAudioService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
 </manifest>

@@ -7,9 +7,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,7 +72,8 @@ fun FavoritesScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 50.dp),
+                .statusBarsPadding()
+                .padding(top = 16.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -110,14 +116,23 @@ fun FavoritesScreen(
                             .padding(horizontal = 20.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(
-                            text = "لم تقم بإضافة أي أذكار للمفضلة بعد.",
-                            color = Color.White.copy(alpha = 0.7f),
-                            fontSize = (18 * LocalFontSizeMultiplier.current).sp,
-                            fontFamily = AmiriFontFamily,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 25.sp,
-                        )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Outlined.FavoriteBorder,
+                                contentDescription = null,
+                                tint = Color.White.copy(alpha = 0.5f),
+                                modifier = Modifier.size(72.dp),
+                            )
+                            Text(
+                                text = "لم تقم بإضافة أي أذكار للمفضلة بعد.",
+                                color = Color.White.copy(alpha = 0.85f),
+                                fontSize = (22 * LocalFontSizeMultiplier.current).sp,
+                                fontFamily = AmiriFontFamily,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 34.sp,
+                                modifier = Modifier.padding(top = 20.dp),
+                            )
+                        }
                     }
                 }
 
@@ -132,6 +147,7 @@ fun FavoritesScreen(
                                 item = item,
                                 isFavorite = true,
                                 isPlaying = audioViewModel.currentlyPlayingId == item.id,
+                                isBuffering = audioViewModel.isPreparing && audioViewModel.currentlyPlayingId == item.id,
                                 onFavoriteToggle = {
                                     appViewModel.toggleFavorite(item.id) { }
                                 },

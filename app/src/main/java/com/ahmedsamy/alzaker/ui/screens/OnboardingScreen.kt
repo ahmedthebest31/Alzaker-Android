@@ -208,24 +208,13 @@ fun OnboardingScreen(
                         }
                         .padding(vertical = 16.dp, horizontal = 40.dp)
                         .semantics {
-                            contentDescription =
-                                if (isLastStep) "ابدأ رحلتك الإيمانية" else "التالي"
-                            stateDescription =
-                                if (isLastStep) {
-                                    "يطلب الأذونات الضرورية ثم ينقلك إلى التطبيق"
-                                } else {
-                                    "ينتقل إلى الخطوة ${step + 2} من $totalSteps"
-                                }
+                            contentDescription = if (isLoading) "جارٍ التحضير…" else "التالي"
                             role = Role.Button
                         },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = when {
-                            isLoading -> "جارٍ التحضير…"
-                            isLastStep -> "ابدأ رحلتك الإيمانية"
-                            else -> "التالي"
-                        },
+                        text = if (isLoading) "جارٍ التحضير…" else "التالي",
                         fontSize = (18 * fontSizeMultiplier).sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AmiriFontFamily,

@@ -5,6 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
@@ -48,28 +53,36 @@ class MainActivity : ComponentActivity() {
             ) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        when (val route = navController.route) {
-                            Route.Onboarding -> OnboardingScreen(
-                                themeName = themeName,
-                                onCompleteOnboarding = {
-                                    appViewModel.markOnboardingComplete()
-                                    navController.completeOnboarding()
-                                },
-                            )
-                            Route.Tabs -> TabsScreen(
-                                selectedTab = navController.selectedTab,
-                                onTabSelected = navController::selectTab,
-                                appViewModel = appViewModel,
-                                audioViewModel = audioViewModel,
-                                themeName = themeName,
-                                onOpenDhikrDetails = navController::navigateToDhikrDetails,
-                            )
-                            is Route.DhikrDetails -> DhikrDetailsScreen(
-                                dhikr = route.dhikr,
-                                repeat = route.repeat,
-                                themeName = themeName,
-                                hapticsEnabled = settings.hapticsEnabled,
-                            )
+                        AnimatedContent(
+                            targetState = navController.route,
+                            transitionSpec = {
+                                fadeIn(tween(durationMillis = 300)) togetherWith fadeOut(tween(durationMillis = 200))
+                            },
+                            label = "routeContent",
+                        ) { route ->
+                            when (route) {
+                                Route.Onboarding -> OnboardingScreen(
+                                    themeName = themeName,
+                                    onCompleteOnboarding = {
+                                        appViewModel.markOnboardingComplete()
+                                        navController.completeOnboarding()
+                                    },
+                                )
+                                Route.Tabs -> TabsScreen(
+                                    selectedTab = navController.selectedTab,
+                                    onTabSelected = navController::selectTab,
+                                    appViewModel = appViewModel,
+                                    audioViewModel = audioViewModel,
+                                    themeName = themeName,
+                                    onOpenDhikrDetails = navController::navigateToDhikrDetails,
+                                )
+                                is Route.DhikrDetails -> DhikrDetailsScreen(
+                                    dhikr = route.dhikr,
+                                    repeat = route.repeat,
+                                    themeName = themeName,
+                                    hapticsEnabled = settings.hapticsEnabled,
+                                )
+                            }
                         }
                         AudioOverlay(
                             currentlyPlayingText = audioViewModel.currentlyPlayingText,

@@ -1,13 +1,15 @@
 package com.ahmedsamy.alzaker.ui.screens
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
@@ -23,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -33,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.alzaker.ui.AppViewModel
+import com.ahmedsamy.alzaker.ui.AudioPlayerViewModel
 import com.ahmedsamy.alzaker.ui.components.ActionButton
 import com.ahmedsamy.alzaker.ui.components.AppBackground
 import com.ahmedsamy.alzaker.ui.components.AppToast
@@ -59,6 +63,7 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     themeName: ThemeName,
     appViewModel: AppViewModel,
+    audioViewModel: AudioPlayerViewModel,
     modifier: Modifier = Modifier,
 ) {
     val theme = themeColors(themeName)
@@ -66,10 +71,22 @@ fun HomeScreen(
     val context = LocalContext.current
     val settings by appViewModel.settings.collectAsStateWithLifecycle()
     val favoriteIds by appViewModel.favoriteIds.collectAsStateWithLifecycle()
+    val playingText = audioViewModel.currentlyPlayingText
 
     var currentDhikr by remember { mutableStateOf(appViewModel.dhikrRepository.getRandomDhikr()) }
+    var visibleDhikr by remember { mutableStateOf(currentDhikr) }
+    val textAlpha = remember { Animatable(1f) }
     var rotationTick by remember { mutableStateOf(0) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(currentDhikr) {
+        if (visibleDhikr !== currentDhikr) {
+            textAlpha.snapTo(1f)
+            textAlpha.animateTo(0f, tween(durationMillis = 200))
+            visibleDhikr = currentDhikr
+            textAlpha.animateTo(1f, tween(durationMillis = 300))
+        }
+    }
 
     LaunchedEffect(rotationTick) {
         val dhikr = currentDhikr
@@ -144,88 +161,86 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .weight(2f),
+                    .padding(top = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "فَاذْكُرُونِي أَذْكُرْكُمْ",
-                    fontSize = (32 * fontSizeMultiplier).sp,
+                    fontSize = (38 * fontSizeMultiplier).sp,
+                    lineHeight = (54 * fontSizeMultiplier).sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = AmiriFontFamily,
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 10.dp),
+                    modifier = Modifier.padding(bottom = 12.dp),
                 )
                 Text(
                     text = "(سورة البقرة، آية 152)",
-                    fontSize = (16 * fontSizeMultiplier).sp,
+                    fontSize = (18 * fontSizeMultiplier).sp,
+                    lineHeight = (26 * fontSizeMultiplier).sp,
                     fontFamily = AmiriFontFamily,
                     color = Color.White.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
                 )
             }
 
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .weight(5f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                    .weight(1f),
+                contentAlignment = Alignment.Center,
             ) {
-                Crossfade(
-                    targetState = currentDhikr,
-                    animationSpec = tween(durationMillis = 300),
-                    label = "homeDhikrFade",
-                ) { dhikr ->
-                    Text(
-                        text = "\" ${dhikr?.dhikr ?: ""} \"",
-                        fontSize = (30 * fontSizeMultiplier).sp,
-                        fontFamily = AmiriFontFamily,
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        maxLines = 4,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.semantics {
-                            contentDescription = dhikr?.dhikr ?: ""
-                        },
-                    )
-                }
-
-                Row(
+                Text(
+                    text = "\" ${visibleDhikr?.dhikr ?: ""} \"",
+                    fontSize = (34 * fontSizeMultiplier).sp,
+                    lineHeight = (50 * fontSizeMultiplier).sp,
+                    fontFamily = AmiriFontFamily,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(top = 15.dp, bottom = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ActionButton(
-                        icon = Icons.Filled.ContentCopy,
-                        contentDescription = "نسخ الذكر إلى الحافظة",
-                        onClick = copyToClipboard,
-                        hapticsEnabled = settings.hapticsEnabled,
-                    )
-                    ActionButton(
-                        icon = if (isCurrentDhikrFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = if (isCurrentDhikrFavorite) "إزالة من المفضلة" else "أضف للمفضلة",
-                        onClick = addToFavorites,
-                        iconColor = if (isCurrentDhikrFavorite) LegacyColors.Red else Color.White,
-                        hapticsEnabled = settings.hapticsEnabled,
-                    )
-                    ActionButton(
-                        icon = Icons.Filled.Share,
-                        contentDescription = "مشاركة الذكر",
-                        onClick = shareDhikr,
-                        hapticsEnabled = settings.hapticsEnabled,
-                    )
-                }
+                        .graphicsLayer { alpha = textAlpha.value }
+                        .semantics {
+                            contentDescription = visibleDhikr?.dhikr ?: ""
+                        },
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(bottom = if (playingText != null) 110.dp else 24.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ActionButton(
+                    icon = Icons.Filled.ContentCopy,
+                    contentDescription = "نسخ الذكر إلى الحافظة",
+                    onClick = copyToClipboard,
+                    hapticsEnabled = settings.hapticsEnabled,
+                )
+                ActionButton(
+                    icon = if (isCurrentDhikrFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = if (isCurrentDhikrFavorite) "إزالة من المفضلة" else "أضف للمفضلة",
+                    onClick = addToFavorites,
+                    iconColor = if (isCurrentDhikrFavorite) LegacyColors.Red else Color.White,
+                    hapticsEnabled = settings.hapticsEnabled,
+                )
+                ActionButton(
+                    icon = Icons.Filled.Share,
+                    contentDescription = "مشاركة الذكر",
+                    onClick = shareDhikr,
+                    hapticsEnabled = settings.hapticsEnabled,
+                )
             }
         }
 
