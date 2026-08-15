@@ -86,6 +86,28 @@
             android:name=".audio.DhikrAudioService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
+
+        <!--
+            Home-screen dhikr widget: rotates a uniform random dhikr with the
+            home-screen cadence (HomeRotation) and a stock-views fade (two
+            driven by self-scheduling setAndAllowWhileIdle alarms. Exported=true
+            is required for an appwidget provider: the system/launcher delivers
+            APPWIDGET_UPDATE to it. BOOT_COMPLETED / MY_PACKAGE_REPLACED let the
+            widget resume rotating after a reboot or an app update.
+        -->
+        <receiver
+            android:name=".ui.widget.DhikrWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dzikr_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

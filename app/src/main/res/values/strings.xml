@@ -1,3 +1,4 @@
 <resources>
     <string name="hello_world">Hello World!</string>
+    <string name="widget_name">الذكر</string>
 </resources>

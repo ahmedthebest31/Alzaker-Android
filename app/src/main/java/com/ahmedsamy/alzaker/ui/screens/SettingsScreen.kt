@@ -113,6 +113,7 @@ private enum class SettingsDialog {
     QuietTimeInvalid,
     BatteryOptimization,
     NotificationPermission,
+    ExactAlarm,
     Donate,
 }
 
@@ -205,7 +206,11 @@ fun SettingsScreen(
             val minutes = tadhkirInterval.toIntOrNull() ?: MIN_AUDIO_INTERVAL
             appViewModel.setTadhkirEnabled(value, minutes)
             if (value) {
-                dialog = SettingsDialog.BatteryOptimization
+                if (Permissions.canScheduleExactAlarms(context)) {
+                    dialog = SettingsDialog.BatteryOptimization
+                } else {
+                    dialog = SettingsDialog.ExactAlarm
+                }
                 showToast("تم تفعيل التذكير المسموع كل $tadhkirInterval دقيقة.")
             } else {
                 showToast("تم تعطيل التذكير المسموع.")
@@ -220,7 +225,12 @@ fun SettingsScreen(
             val minutes = hikmahInterval.toIntOrNull() ?: 1
             appViewModel.setHikmahEnabled(value, minutes)
             if (value) {
-                showToast("تم تفعيل تذكير الحكمة كل $hikmahInterval دقيقة.")
+                if (Permissions.canScheduleExactAlarms(context)) {
+                    showToast("تم تفعيل تذكير الحكمة كل $hikmahInterval دقيقة.")
+                } else {
+                    dialog = SettingsDialog.ExactAlarm
+                    showToast("تم تفعيل تذكير الحكمة كل $hikmahInterval دقيقة.")
+                }
             } else {
                 showToast("تم تعطيل تذكير الحكمة.")
             }
@@ -792,6 +802,26 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = closeDialog) { Text("إلغاء") }
+            },
+        )
+
+        SettingsDialog.ExactAlarm -> AlertDialog(
+            onDismissRequest = closeDialog,
+            title = { Text("المنبهات الدقيقة مطلوبة") },
+            text = {
+                Text(
+                    "يسمح النظام على هذا الجهاز للمنبهات الدقيقة فقط بتشغيل التذكير الصوتي في موعده عند إغلاق التطبيق.\n\n" +
+                        "منح الإذن يضمن وصول تذكيرك في اللحظة المحددة بدقة.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    Permissions.openExactAlarmSettings(context)
+                    closeDialog()
+                }) { Text("فتح الإعدادات") }
+            },
+            dismissButton = {
+                TextButton(onClick = closeDialog) { Text("لاحقًا") }
             },
         )
 

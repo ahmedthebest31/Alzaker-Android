@@ -11,6 +11,7 @@ import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.net.Uri
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.ahmedsamy.alzaker.R
 import kotlin.random.Random
@@ -41,7 +42,17 @@ class AudioReminderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(FOREGROUND_NOTIFICATION_ID, buildForegroundNotification())
+        // On Android 12+ a foreground service may NOT be started from an
+        // INEXACT alarm broadcast (only exact alarms are exempt), and on
+        // Android 13+ the notification may be suppressed. Degrade gracefully:
+        // still attempt playback best-effort instead of failing silently.
+        val foregroundStarted = runCatching {
+            startForeground(FOREGROUND_NOTIFICATION_ID, buildForegroundNotification())
+            true
+        }.getOrDefault(false)
+        if (!foregroundStarted) {
+            Log.w(TAG, "startForeground failed; playing without foreground notification")
+        }
         if (audioFocusManager?.requestAudioFocus() != true) {
             stopPlayback()
             return START_NOT_STICKY
@@ -129,6 +140,7 @@ class AudioReminderService : Service() {
     }
 
     private companion object {
+        const val TAG = "AudioReminderService"
         const val FOREGROUND_NOTIFICATION_ID = 1002
         val AUDIO_DROP_RES_IDS = intArrayOf(
             R.raw.audio_drop_1,
