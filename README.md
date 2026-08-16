@@ -63,6 +63,15 @@ This is the native rewrite (Kotlin + Jetpack Compose) of the previously publishe
 - Full RTL design supporting Arabic
 - Dark theme by default with an optional dynamic color (Material You) mode
 
+#### Theme Palette 🎨
+Each screen is painted with a vertical gradient from `primary` (top) to `primaryLight` (bottom), with white text on top and a shared gold accent (`#FFD700`) that stays readable on both stops (contrast ≥ 4.5:1). Every gradient stop keeps WCAG AAA contrast (≥ 7:1) with the white text:
+
+- **Default** 🌿 — deep emerald: `#0B3D2B` → `#155E46`
+- **Midnight** 🌙 — deep navy: `#0C1126` → `#1F2A5A`
+- **Nature** 🍃 — dark teal: `#05333A` → `#0D555B`
+- **Royal** 👑 — dark violet: `#241040` → `#422765`
+- **High Contrast** ♿ — pure black with a bright yellow accent (`#FFFF00`)
+
 ### Accessibility ♿
 - Full compatibility with **TalkBack** (screen reader)
 - Every button has a descriptive label and live announcements for changes
