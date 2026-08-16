@@ -33,23 +33,31 @@ data class AlzakerThemeColors(
     val text: Color = Color.White,
 )
 
-/** The five themes with the exact hex values from legacy utils/colors.ts. */
+/** Gold accent shared by every theme (legacy colors.gold). */
+val Gold = Color(0xFFFFD700)
+
+/**
+ * The five themes. Hex values were redesigned on 2026-08-17 into a dark,
+ * gold-accented Islamic palette: every gradient stop keeps WCAG AAA contrast
+ * (>= 7:1) with the white text painted on top, and the gold accent stays
+ * readable on both stops (>= 4.5:1). The persisted theme keys are unchanged.
+ */
 val AlzakerThemes: Map<ThemeName, AlzakerThemeColors> = mapOf(
     ThemeName.DEFAULT to AlzakerThemeColors(
-        primary = Color(0xFF1E3C72),
-        primaryLight = Color(0xFF2A5298),
+        primary = Color(0xFF0B3D2B),
+        primaryLight = Color(0xFF155E46),
     ),
     ThemeName.MIDNIGHT to AlzakerThemeColors(
-        primary = Color(0xFF0F0C29),
-        primaryLight = Color(0xFF302B63),
+        primary = Color(0xFF0C1126),
+        primaryLight = Color(0xFF1F2A5A),
     ),
     ThemeName.NATURE to AlzakerThemeColors(
-        primary = Color(0xFF134E5E),
-        primaryLight = Color(0xFF71B280),
+        primary = Color(0xFF05333A),
+        primaryLight = Color(0xFF0D555B),
     ),
     ThemeName.ROYAL to AlzakerThemeColors(
-        primary = Color(0xFF4B6CB7),
-        primaryLight = Color(0xFF182848),
+        primary = Color(0xFF241040),
+        primaryLight = Color(0xFF422765),
     ),
     ThemeName.HIGH_CONTRAST to AlzakerThemeColors(
         primary = Color.Black,
@@ -61,9 +69,6 @@ val AlzakerThemes: Map<ThemeName, AlzakerThemeColors> = mapOf(
 
 fun themeColors(themeName: ThemeName): AlzakerThemeColors =
     AlzakerThemes[themeName] ?: AlzakerThemes.getValue(ThemeName.DEFAULT)
-
-/** Gold accent shared by every theme (legacy colors.gold). */
-val Gold = Color(0xFFFFD700)
 
 /** Shared legacy palette from utils/colors.ts (`colors` object). */
 object LegacyColors {

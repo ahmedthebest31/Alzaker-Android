@@ -5,9 +5,9 @@
     <!--
         Widget colors. API 31+ resolves these to Material You system palettes
         (values-v31/colors.xml); this base file is the dark brand fallback for
-        API 26-30, matching the dhikr widget pill (#E6303030 + #33FFFFFF).
+        API 26-30, matching the app's emerald gradient identity (#E60B3D2B).
     -->
-    <color name="widget_card_bg">#E6303030</color>
+    <color name="widget_card_bg">#E60B3D2B</color>
     <color name="widget_card_stroke">#33FFFFFF</color>
     <color name="widget_count">#FFFFFF</color>
     <color name="widget_count_reached">#FFD700</color>
