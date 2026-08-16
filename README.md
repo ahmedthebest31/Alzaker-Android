@@ -5,7 +5,7 @@ Your daily companion for dhikr and staying connected with your worship — now a
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-7F52FF?logo=kotlin)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material3-4285F4?logo=android)](https://developer.android.com/jetpack/compose)
 [![Android](https://img.shields.io/badge/Android-8.0%20%2B-3DDC84?logo=android)](https://www.android.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 <a href="https://play.google.com/store/apps/details?id=com.ahmedsamy.alzaker">
   <img alt="Get it on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="250"/>
@@ -13,7 +13,7 @@ Your daily companion for dhikr and staying connected with your worship — now a
 
 ## About ✨
 
-Alzaker is a comprehensive Islamic app that helps you maintain dhikr throughout the day. It features a complete adhkar library, an advanced digital tasbih, background audio playback, smart audible and silent reminders, a home-screen dhikr widget, and full accessibility support — all with zero ads, zero tracking, and no account required.
+Alzaker is a comprehensive Islamic app that helps you maintain dhikr throughout the day. It features a complete adhkar library, an advanced digital tasbih, background audio playback, smart audible and silent reminders, two home-screen widgets (a rotating dhikr widget and a tasbih counter widget), and full accessibility support — all with zero ads, zero tracking, and no account required.
 
 This is the native rewrite (Kotlin + Jetpack Compose) of the previously published Expo app, keeping the same app identity and signing key so it ships as a seamless update.
 
@@ -52,9 +52,10 @@ This is the native rewrite (Kotlin + Jetpack Compose) of the previously publishe
 - Save favorite adhkar for quick access
 - One-tap toggle to add/remove
 
-### Home-Screen Widget 🧩
-- A rotating dhikr widget that changes automatically with the same cadence and fade as the Home tab
-- Works on any launcher (stock RemoteViews layout)
+### Home-Screen Widgets 🧩
+- **Dhikr widget** — a rotating dhikr that changes automatically with the same cadence and fade as the Home tab, plus a **copy button** that copies the displayed dhikr to the clipboard
+- **Tasbih widget** — tap to count with haptic feedback, shares the same goal as the app's tasbih tab, shows a thin progress bar and a compact "N/M" counter, the count turns gold when the goal is reached (and keeps counting), and a reset button opens a confirmation dialog
+- Both widgets follow the system color theme (Material You on Android 12+) and work on any launcher (stock RemoteViews layouts)
 
 ### Themes and Visual Customization 🎨
 - **5 custom themes**: Default, Midnight, Nature, Royal, High Contrast
@@ -79,7 +80,7 @@ This is the native rewrite (Kotlin + Jetpack Compose) of the previously publishe
 - **Clean Architecture**: ViewModels, Repository pattern, DataStore preferences
 - **AlarmManager** exact alarms with self-rescheduling chains
 - **Foreground service** + platform **MediaPlayer** and **MediaSession** for background audio
-- **App Widget** for the home-screen dhikr
+- **App Widgets** for the home-screen dhikr and tasbih counter
 - **minSdk 26 / targetSdk 36**, fully offline-capable builds
 
 ## Project Structure 🗂️
@@ -94,7 +95,7 @@ Alzaker-Android/
 │       │   ├── reminder/    # Alarm scheduler, receivers, quiet hours
 │       │   ├── ui/          # Screens, navigation, theme, components
 │       │   ├── util/        # Haptics, permissions, time format, etc.
-│       │   └── widget/      # Home-screen dhikr widget
+│       │   └── widget/      # Home-screen widgets (dhikr + tasbih)
 │       ├── res/             # Assets, raw audio, font, drawables
 │       └── AndroidManifest.xml
 ├── gradle/                  # Version catalog (locked, offline-capable)
@@ -163,7 +164,7 @@ Without `signing.properties` the release build still succeeds but produces an un
 
 ## License 📄
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 (GPLv3) - see the [LICENSE](LICENSE) file for details.
 
 ## Support 💚
 
