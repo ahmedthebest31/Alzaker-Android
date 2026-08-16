@@ -156,7 +156,7 @@ Without `signing.properties` the release build still succeeds but produces an un
 
 - [Google Play Store](https://play.google.com/store/apps/details?id=com.ahmedsamy.alzaker)
 - [PayPal](https://www.paypal.com/paypalme/ahmedthebest31)
-- [InstaPay](https://ipn.eg/S/ahmedthebest/instapay/63TO4s)
+- [InstaPay](https://ipn.eg/S/ahmedsamyelkhouly/instapay/1KWwcR)
 
 ## Developer 👨‍💻
 

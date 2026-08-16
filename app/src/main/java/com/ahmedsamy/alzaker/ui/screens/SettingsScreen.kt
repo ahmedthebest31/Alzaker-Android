@@ -97,7 +97,7 @@ import kotlinx.coroutines.delay
 // --- App and Donation Links (legacy settings.tsx constants) -----------------
 private const val ANDROID_STORE_URL = "https://play.google.com/store/apps/details?id=com.ahmedsamy.alzaker"
 private const val PAYPAL_URL = "https://www.paypal.com/paypalme/ahmedthebest31"
-private const val INSTAPAY_URL = "https://ipn.eg/S/ahmedthebest/instapay/63TO4s"
+private const val INSTAPAY_URL = "https://ipn.eg/S/ahmedsamyelkhouly/instapay/1KWwcR"
 private const val DEFAULT_FONT_SIZE_MULTIPLIER = 1.0f
 private const val MIN_AUDIO_INTERVAL = IntervalValidation.MIN_AUDIO_INTERVAL
 private const val HIKMAH_RESET_INTERVAL = 60
