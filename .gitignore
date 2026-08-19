@@ -40,3 +40,8 @@ project_analysis_report.md
 *.log
 build_log.txt
 ai_changes.md
+
+# for gitnexus analyze
+.claude/
+.gitnexus/
+
