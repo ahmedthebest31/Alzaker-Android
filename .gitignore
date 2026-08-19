@@ -45,3 +45,7 @@ ai_changes.md
 .claude/
 .gitnexus/
 
+# AI assistant files (local only)
+AGENTS.md
+CLAUDE.md
+
